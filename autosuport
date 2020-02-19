@@ -1,0 +1,9 @@
+建议在操作前先收集一次autosuport，如果后续发生问题再收集一次，2份autosupport可以做对比。
+收集命令如下：
+system node autosupport invoke -node node_name1 -type all -message "invoke.all" -uri file:///mroot/etc/log/retransmit/YYYYMMDD_node_name1.7z
+system node autosupport invoke -node node_name2 -type all -message "invoke.all" -uri file:///mroot/etc/log/retransmit/YYYYMMDD_node_name2.7z
+
+将<node>替换成你的节点名称，可以用tab键补全，收集完成后等几分钟就可以。
+然后到下面的网址去下载，替换对应的集群管理ip和节点名字就可以
+
+https://<cluster-mgmt-ip>/spi/<node_name>/etc/log/retransmit
