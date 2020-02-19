@@ -1,0 +1,42 @@
+::> network tcpdump start -node <node> -port e0a ?
+  [[-address] <IP Address>]      IP Address 
+  [ -buffer-size {1..2097151} ]  Buffer Size in KB
+  [ -protocol-port {1..65535} ]  Protocol Port Number
+  [ -file-size {1..65536} ]      Trace File Size in MB
+  [ -rolling-traces {1..64} ]    Number of Rolling Trace Files
+ 
+The - address option can specify only one IP address to filter the trace.
+The -protocol-port option allows for the trace to be filtered by one port for both TCP and UDP traffic.
+The -file-size option allows for modification of the trace file size from its default (1024 MB).
+The -rolling-traces option specifies the number of traces files to save if using rolling packet traces.
+If "-rolling-traces" is not used, a rolling trace with 2 files will be used.
+
+!!  Ensure that node's root volume vol0 has enough space if you need to collect large trace files, you can use the df -h command to check it. !!
+!!  Be aware that by default the trace files will be added to snapshot copies and that vol0 (root volume) may fill up very quickly causing an outage. !!
+!!  To avoid that trace files will be included within snapshots perform below steps. !!
+::> vol options vol0 nosnap=on. (automatic Snapshot copies is disabled)
+You may consider to delete old snapshots for vol0 based on your space requirements. 
+::> snap list vol0
+::> snap delete vol0 snap name
+
+Rolling trace example:
+::> network tcpdump start -node <node> -port e0a -buffer-size 2097151 -file-size 512 -rolling-traces 4 -address 10.1.1.2 -protocol-port 445
+ 
+This trace rolls up to 4 trace files of size 512 MB each (oldest file removed first). It uses a 4MB memory buffer, and traces on port e0a filtering for IP address 10.1.1.2 and TCP/UDP port 445.
+ 
+To stop a packet trace:
+::> tcpdump stop -node <node> -port [*|<port>]
+ 
+To show packet trace files:
+::> network tcpdump trace show
+Packet traces are stored in the following path:
+/mroot/etc/log/packet_traces
+https://<cluster-mgmt-ip>/spi/<node_name>/etc/log/packet_traces
+ 
+To retrieve packet traces:
+1033620: How to manually collect logs and copy files from a clustered Data ONTAP storage system
+ 
+To delete old packet traces:
+::> network tcpdump trace delete -node <node> -trace-file
+   [-node] <nodename>         Node Name
+   [-trace-file] <text>       Trace File
